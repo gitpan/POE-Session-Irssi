@@ -16,8 +16,9 @@ sub import {
    {
       no strict 'refs';
       *{ $package . '::UNLOAD' } = sub {
+	    print "UNLOAD $package";
 	    $POE::Kernel::poe_kernel->signal (
-	       $POE::Kernel::poe_kernel, 'unload'
+	       $POE::Kernel::poe_kernel, 'unload', $package
 	    );
 	 };
    }
@@ -27,7 +28,7 @@ sub import {
 sub SE_DATA () { 3 }
 
 use vars qw($VERSION);
-$VERSION = '0.2';
+$VERSION = '0.3';
 
 # local var we needn't worry about __PACKAGE__ being interpreted as
 # a string literal
@@ -144,6 +145,8 @@ forget to put them inside quotes.
 sub instantiate {
    my ($class, $params) = @_;
 
+   #print Carp::longmess("foo!");
+   my $package = caller(1);
    my $self = $class->SUPER::instantiate;
 
    croak "expecting a hashref" unless (ref($params) eq 'HASH');
@@ -177,8 +180,9 @@ sub instantiate {
       $self->[SE_DATA]->{$pkg}->{"command_name_map"} = \%name_map;
    }
    $params->{inline_states}->{_irssi_script_unload} = sub {
-      my ($kernel) = $_[KERNEL];
+      my ($kernel, $forme) = @_[KERNEL, ARG1];
 
+      return unless ($forme eq $package);
       # try to clean up so that we get reaped by the kernel
       $kernel->alarm_remove_all;
       $kernel->sig('unload');
