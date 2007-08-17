@@ -1,7 +1,11 @@
+Build.PL
 COPYING
 lib/POE/Session/Irssi.pm
 Makefile.PL
 MANIFEST			This list of files
+META.yml
 README
-test.pl
-META.yml                                 Module meta-data (added by MakeMaker)
+t/01_use.t
+t/02_unload.t
+t/scripts/01_use.pl
+t/scripts/02_unload.pl

@@ -1,12 +1,16 @@
-# http://module-build.sourceforge.net/META-spec.html
-#XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
-name:         POE-Session-Irssi
-version:      0.3
-version_from: lib/POE/Session/Irssi.pm
-installdirs:  site
+---
+name: POE-Session-Irssi
+version: 0.4
+author:
+  - 'Martijn van Beers  <martijn@eekeek.org>'
+abstract: emit POE events for Irssi signals
+license: gpl
 requires:
-    POE:                           0.31
-    POE::Loop::Glib:               0.0023
-
-distribution_type: module
-generated_by: ExtUtils::MakeMaker version 6.30_01
+  POE: 0.31
+  POE::Loop::Glib: 0.0023
+  Sub::Uplevel: 0.14
+provides:
+  POE::Session::Irssi:
+    file: lib/POE/Session/Irssi.pm
+    version: 0.4
+generated_by: Module::Build version 0.26

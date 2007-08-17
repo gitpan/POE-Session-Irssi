@@ -28,7 +28,7 @@ sub import {
 sub SE_DATA () { 3 }
 
 use vars qw($VERSION);
-$VERSION = '0.3';
+$VERSION = '0.4';
 
 # local var we needn't worry about __PACKAGE__ being interpreted as
 # a string literal
@@ -36,7 +36,7 @@ my $pkg = __PACKAGE__;
 
 =head1 NAME
 
-POE::Session::Irssi -- emit POE events for Irssi signals
+POE::Session::Irssi - emit POE events for Irssi signals
 
 =head1 SYNOPSIS
 
@@ -79,6 +79,9 @@ It connects the signals and commands handlers you define as L<POE> events
 with the L<Irssi> machinery. It also tries to clean up as much as possible
 when the script gets unloaded, by removing all the alarms your session
 has running.
+
+It does this cleaning up by installing an UNLOAD handler that will send an
+unload signal. See SIGNALS below for more information.
 
 =head1 CONSTRUCTOR
 
@@ -249,6 +252,19 @@ sub try_alloc {
    return $self->SUPER::try_alloc (@start_args);
 }
 
+=head1 SIGNALS
+
+POE allows you to define your own signals, which are handled the same as
+system signals. See L<POE::Kernel> for more information.
+L<POE::Session::Irssi> defines one such signal:
+
+=head2 unload $package
+
+This signal is sent when irssi tries to unload a script. ARG1 contains the
+package name of the script that is being unloaded. L<POE::Session::Irssi>
+also creates a handler for this signal that does its best to clean up for
+the session by removing any aliases set and removing the signal handler
+
 =head1 NOTES
 
 Since you don't need to call POE::Kernel->run() in Irssi scripts (because
@@ -271,9 +287,13 @@ This would allow discovery of what other sessions we can talk to.
 
 =back
 
-=head1 AUTHORS & COPYRIGHT
+=head1 AUTHOR
 
-This module is Copyright 2006 Martijn van Beers. It is free
+Martijn van Beers  <martijn@eekeek.org>
+
+=head1 COPYRIGHT
+
+This module is Copyright 2006-2007 Martijn van Beers. It is free
 software; you may reproduce and/or modify it under the terms of
 the GPL licence v2.0. See the file COPYING in the source tarball
 for more information
