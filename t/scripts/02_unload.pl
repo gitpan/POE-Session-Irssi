@@ -21,6 +21,7 @@ my $s = POE::Session::Irssi->create(
     },
     _stop => sub {
       Test::More::ok(1, 'unloaded');
+      warn "\n";
     },
   },
 );

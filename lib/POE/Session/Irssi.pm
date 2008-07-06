@@ -16,7 +16,6 @@ sub import {
    {
       no strict 'refs';
       *{ $package . '::UNLOAD' } = sub {
-	    print "UNLOAD $package";
 	    $POE::Kernel::poe_kernel->signal (
 	       $POE::Kernel::poe_kernel, 'unload', $package
 	    );
@@ -28,7 +27,7 @@ sub import {
 sub SE_DATA () { 3 }
 
 use vars qw($VERSION);
-$VERSION = '0.4';
+$VERSION = '0.50';
 
 # local var we needn't worry about __PACKAGE__ being interpreted as
 # a string literal
@@ -84,12 +83,6 @@ It does this cleaning up by installing an UNLOAD handler that will send an
 unload signal. See SIGNALS below for more information.
 
 =head1 CONSTRUCTOR
-
-=cut
-
-sub new {
-	die "Not supported. use create.";
-}
 
 =head2 create (%args)
 
@@ -148,7 +141,6 @@ forget to put them inside quotes.
 sub instantiate {
    my ($class, $params) = @_;
 
-   #print Carp::longmess("foo!");
    my $package = caller(1);
    my $self = $class->SUPER::instantiate;
 
@@ -195,16 +187,16 @@ sub instantiate {
    return $self;
 }
 
+# Irssi wants you to call Irssi::signal_add and Irssi::command_bind
+# from the Irssi::Script::$name package it creates for your script,
+# so it can clean up. This is where we trick it into thinking we're
+# doing that.
+
 sub _connect_stuff {
    my ($kernel, $session) = @_[KERNEL, SESSION];
 
-   #my $foolvl = 0;
-   #$foolvl++ while (caller($foolvl) ne 'Irssi::Script::test2');
-   #print "ARRIVED AT $foolvl";
-
-   my $lvl = 8;
-   # if there's an existing _start, we're a level higher(lower?)
-   $lvl++ if (caller() eq 'POE::Session::Irssi');
+   my $lvl = 1;
+   $lvl++ while (caller($lvl - 1) !~ /^Irssi::Script::/);
 
    my $name_map = $session->[SE_DATA]->{$pkg}->{signal_name_map};
    while (my ($irssi_name, $poe_name) = each %$name_map) {
@@ -291,12 +283,12 @@ This would allow discovery of what other sessions we can talk to.
 
 Martijn van Beers  <martijn@eekeek.org>
 
-=head1 COPYRIGHT
+=head1 LICENSE gpl
 
-This module is Copyright 2006-2007 Martijn van Beers. It is free
+This module is Copyright 2006-2008 Martijn van Beers. It is free
 software; you may reproduce and/or modify it under the terms of
-the GPL licence v2.0. See the file COPYING in the source tarball
-for more information
+the GPL version 2.0 or higher. See the file LICENSE in the source
+tarball for more information
 
 =cut
 
